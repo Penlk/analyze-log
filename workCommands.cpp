@@ -1,6 +1,7 @@
 #include "Parser.h"
-struct ArgumentsWork
+
+long long ParserTime(char* str, int i)
 {
-    IsCommands asddfp;
+    long long result = 0;
     
-};
+}

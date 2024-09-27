@@ -66,3 +66,43 @@ int StringToInt(char* str, int start, int end) //Возвращает -1, есл
 
     return result;
 }
+
+
+int MonthDays(char* month) //Без високосного кода
+{
+    // Выводит -1, если формат месяца неправильный
+    if (IsEqualStrings(month, "Jan") || IsEqualStrings(month, "Mar") || IsEqualStrings(month, "May") || 
+    IsEqualStrings(month, "Jul") || IsEqualStrings(month, "Aug") || IsEqualStrings(month, "Oct") || IsEqualStrings(month, "Dec"))
+        return 31;
+    else if (IsEqualStrings(month, "Feb"))
+        return 28;
+    else if (IsEqualStrings(month, "Apr") || IsEqualStrings(month, "Jun") || IsEqualStrings(month, "Sep") || IsEqualStrings(month, "Nov"))
+        return 30;
+    
+    return -1;
+}
+
+char* IndexToMonth(int index)
+{
+    char* months[] = {"Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"};
+    return months[index];
+}
+
+long long TranslateTime(int days, char* month, int year, int hours, int minutes, int seconds) //Гарантировано, что все данные в правильном формате
+{
+    long long result = (days - 1) * 24 * 60 * 60 + hours * 60 * 60 + minutes * 60 + seconds;
+    for (int i = 1970; i < year; i++)
+        result += (i % 400 == 0 || (i % 100 != 0 && i % 4 == 0)) * 24 * 60 * 60 + 365 * 24 * 60 * 60;
+    
+
+    //WARNING
+    //Плохая реализация, переделать
+    for (int m = 0; !IsEqualStrings(IndexToMonth(m), month); m++)
+        result += MonthDays(IndexToMonth(m)) * 24 * 60 * 60;
+    
+    if (year % 400 == 0 || (year % 100 != 0 && year % 4 == 0))
+        if (!IsEqualStrings(month, "Jan") || !IsEqualStrings(month, "Feb"))
+            result += 24 * 60 * 60;
+    
+    return result;
+}

@@ -181,6 +181,20 @@ int Parse(int argc, char** argv, IsCommands& flags, ValuesArgs& args)
         {
             if (flags.args[fullArg])
             {
+                if (argv[i][StringLength(fullArgs[fullArg])] != '=' && lengthThisArg > StringLength(fullArgs[fullArg]))
+                {
+                    if (flags.log)
+                    {
+                        printf("The 2nd log\n%s\n", argv[i]);
+                        return 1;
+                    } else
+                    {
+                        flags.log = true;
+                        args.pathFileLog = argv[i];
+                        lastArg = -1;
+                        continue;
+                    }
+                }
                 printf("Writting the 2nd same argument\n%s\n", argv[i]);
                 return 1;
             }
