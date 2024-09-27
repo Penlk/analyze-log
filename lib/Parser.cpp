@@ -1,6 +1,6 @@
 #include <iostream>
 #include "Functions.h"
-#include "AllStructs.h"
+#include "Structs/AllStructs.h"
 
 char* fullArgs[] = {"--output", "--print", "--stats", "--window", "--from", "--to"};
 char* reduceArgs[] = {"-o", "-p", "-s", "-w", "-f", "-t"};

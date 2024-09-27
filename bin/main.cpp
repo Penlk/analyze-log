@@ -1,8 +1,8 @@
 #include <iostream>
-#include "Parser.h"
-#include "Functions.h"
-#include "WorkCommands.h"
-#include "AllStructs.h"
+#include "../lib/Parser.h"
+#include "../lib/Functions.h"
+#include "../lib/WorkCommands.h"
+#include "../lib/Structs/AllStructs.h"
 #include <fstream>
 
 int main(int argc, char* argv[])
