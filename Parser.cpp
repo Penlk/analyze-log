@@ -1,5 +1,4 @@
 #include <iostream>
-#include <time.h>
 #include "Functions.h"
 
 struct IsCommands
@@ -46,8 +45,8 @@ struct ValuesArgs
     char* pathFileOutput = nullptr;
     int statsN = 10;
     int windowT = 0;
-    int fromT = 0;
-    int toT = time(0);
+    long long fromT = 0;
+    long long toT = 17274350860000;
     void IndexToFieldValue(int i, int value)
     {
         switch (i)

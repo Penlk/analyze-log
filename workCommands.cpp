@@ -1,7 +1,8 @@
 #include "Parser.h"
 
-long long ParserTime(char* str, int i)
-{
-    long long result = 0;
-    
-}
+// int Functions(IsCommands& flags, ValuesArgs& args)
+// {
+//     std::ifstream logFile;
+//     logFile.open(args.pathFileLog, ios::in);
+//     return 0;
+// }
