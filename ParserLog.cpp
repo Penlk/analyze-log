@@ -1,0 +1,4 @@
+int ParserLog(char* str)
+{
+    
+}

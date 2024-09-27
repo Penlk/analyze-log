@@ -1,5 +1,6 @@
 #include "Parser.h"
 
+
 // int Functions(IsCommands& flags, ValuesArgs& args)
 // {
 //     std::ifstream logFile;
