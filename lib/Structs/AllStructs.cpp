@@ -1,4 +1,5 @@
 #include "AllStructs.h"
+#include "../Functions.h"
 
 void IsCommands::IndexToField(int i)
 {
@@ -43,4 +44,33 @@ void ValuesArgs::IndexToFieldValue(int i, int value)
         toT = value;
         break;
     }
+}
+
+long long ValuesLog::LocalTimeToInt() //[localTime]
+{
+    int start = 1;
+    int end = FindSymbol(localTime, start, '/');
+    int day = StringToInt(localTime, start, end);
+
+    start = end + 1;
+    end = FindSymbol(localTime, start, '/');
+    char* month = CopyString(localTime, start, end);
+
+    start = end + 1;
+    end = FindSymbol(localTime, start, ':');
+    int year = StringToInt(localTime, start, end);
+
+    start = end + 1;
+    end = FindSymbol(localTime, start, ':');
+    int hour = StringToInt(localTime, start, end);
+
+    start = end + 1;
+    end = FindSymbol(localTime, start, ':');
+    int minute = StringToInt(localTime, start, end);
+
+    start = end + 1;
+    end = FindSymbol(localTime, start, ' ');
+    int second = StringToInt(localTime, start, end);
+
+    return TranslateTime(day, month, year, hour, minute, second);
 }

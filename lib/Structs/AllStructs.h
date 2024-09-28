@@ -21,5 +21,18 @@ struct ValuesArgs
     int windowT = 0;
     long long fromT = 0;
     long long toT = 17274350860000;
+
     void IndexToFieldValue(int i, int value);
+};
+
+struct ValuesLog
+{
+    char* remoteAddr;
+    char* localTime;
+    char* request;
+    int status;
+    long bytesSend;
+    long long timeInt;
+
+    long long LocalTimeToInt();
 };

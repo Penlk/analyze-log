@@ -12,9 +12,14 @@ int main(int argc, char* argv[])
     Parse(argc, argv, flags, args);
 
     std::ifstream log;
-    log.open(args.pathFileLog, std::ios::in);
+    log.open(args.pathFileLog);
+    char buf[1000];
+    log.getline(buf, 1000);
+    std::cout << buf << std::endl;
+    log.getline(buf, 1000);
+    std::cout << StringLength(buf) << std::endl;
     log.close();
-    std::cout << TranslateTime(31, "Feb", 1992, 2, 59, 59);
+    // std::cout << TranslateTime(31, "Feb", 1992, 2, 59, 59);
     if (args.pathFileOutput != nullptr) {
         std::cout << "output: " << flags.output << " values: " << args.pathFileOutput << '\n';
     }
