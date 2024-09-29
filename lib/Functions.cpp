@@ -69,13 +69,15 @@ int StringToInt(char* str, int start, int end) //Возвращает -1, есл
 
 char* CopyString(char* str, int start, int end)
 {
-    char result[end - start];
+    char result[end - start + 1];
 
     for (int i = start; i < end; i++)
-        result[i] = str[start + i];
-
+        result[i - start] = str[i];
+    
+    result[end - start] = '\0';
     return result;
 }
+
 
 int MonthDays(char* month) //Без високосного кода
 {
@@ -106,7 +108,7 @@ long long TranslateTime(int days, char* month, int year, int hours, int minutes,
 
     //WARNING
     //Плохая реализация, переделать
-    for (int m = 0; !IsEqualStrings(IndexToMonth(m), month); m++)
+    for (int m = 0; !IsEqualStrings(IndexToMonth(m), month) && m < 12; m++)
         result += MonthDays(IndexToMonth(m)) * 24 * 60 * 60;
     
     if (year % 400 == 0 || (year % 100 != 0 && year % 4 == 0))
@@ -119,8 +121,12 @@ long long TranslateTime(int days, char* month, int year, int hours, int minutes,
 int FindSymbol(char* str, int start, char symbol) //Возвращает -1, если не натыкается на '\0' || '\n'
 {
     int end = start;
-    while (str[end] != symbol || str[end] != '\0' || str[end] != '\n')
+    while (str[end] != symbol)
+    {
+        if (str[end] == '\0' || str[end] == '\n')
+            return -1;
+        
         end++;
-    
+    }
     return end;
 }

@@ -9,7 +9,7 @@ struct IsCommands
     bool window = false;
     bool from = false;
     bool to = false;
-    bool* args = new bool[6]{false, false, false, false, false, false};
+    bool args[6];
     void IndexToField(int i);
 };
 

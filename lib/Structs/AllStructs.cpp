@@ -1,5 +1,6 @@
 #include "AllStructs.h"
 #include "../Functions.h"
+#include <iostream> //Убрать
 
 void IsCommands::IndexToField(int i)
 {
@@ -48,29 +49,35 @@ void ValuesArgs::IndexToFieldValue(int i, int value)
 
 long long ValuesLog::LocalTimeToInt() //[localTime]
 {
-    int start = 1;
-    int end = FindSymbol(localTime, start, '/');
-    int day = StringToInt(localTime, start, end);
+    if (localTimeRight - localTimeLeft + 1 < 23)
+        return -1;
+    
+    int start = localTimeLeft + 1;
+    int end = FindSymbol(str, localTimeLeft, '/');
+    int day = StringToInt(str, start, end);
 
     start = end + 1;
-    end = FindSymbol(localTime, start, '/');
-    char* month = CopyString(localTime, start, end);
+    end = FindSymbol(str, start, '/');
+    char* month = CopyString(str, start, end);
 
     start = end + 1;
-    end = FindSymbol(localTime, start, ':');
-    int year = StringToInt(localTime, start, end);
+    end = FindSymbol(str, start, ':');
+    int year = StringToInt(str, start, end);
 
     start = end + 1;
-    end = FindSymbol(localTime, start, ':');
-    int hour = StringToInt(localTime, start, end);
+    end = FindSymbol(str, start, ':');
+    int hour = StringToInt(str, start, end);
 
     start = end + 1;
-    end = FindSymbol(localTime, start, ':');
-    int minute = StringToInt(localTime, start, end);
+    end = FindSymbol(str, start, ':');
+    int minute = StringToInt(str, start, end);
 
     start = end + 1;
-    end = FindSymbol(localTime, start, ' ');
-    int second = StringToInt(localTime, start, end);
+    end = FindSymbol(str, start, ' ');
+    int second = StringToInt(str, start, end);
+
+    if (end >= localTimeRight)
+        return -1;
 
     return TranslateTime(day, month, year, hour, minute, second);
 }

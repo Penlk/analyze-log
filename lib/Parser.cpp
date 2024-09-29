@@ -47,6 +47,11 @@ int Parse(int argc, char** argv, IsCommands& flags, ValuesArgs& args)
         int fullArg = IndexFullArgument(argv[i]);
         int reduceArg = IndexReduceArgument(argv[i]);
 
+        // printf("[%d]Arg: %s\tFull: %d\t Reduce: %d\t [", i, argv[i], fullArg, reduceArg);
+        // for (int i = 0; i < 6; i++)
+        //     printf("%d, ", (int)flags.args[i]);
+        // printf("]\n");
+
         if (lastArg == 0)
         {
             if (args.pathFileOutput != nullptr)

@@ -3,22 +3,21 @@
 #include "../lib/Functions.h"
 #include "../lib/WorkCommands.h"
 #include "../lib/Structs/AllStructs.h"
+#include "../lib/ParserLog.h"
 #include <fstream>
 
 int main(int argc, char* argv[])
 {
     IsCommands flags;
     ValuesArgs args;
-    Parse(argc, argv, flags, args);
-
-    std::ifstream log;
-    log.open(args.pathFileLog);
-    char buf[1000];
-    log.getline(buf, 1000);
-    std::cout << buf << std::endl;
-    log.getline(buf, 1000);
-    std::cout << StringLength(buf) << std::endl;
-    log.close();
+    if(Parse(argc, argv, flags, args))
+        return 1;
+    ParserLog(flags, args);
+   
+    // log.getline(buf, 1000);S
+    // std::cout << buf << std::endl;
+    // log.getline(buf, 1000);
+    // std::cout << StringLength(buf) << std::endl;
     // std::cout << TranslateTime(31, "Feb", 1992, 2, 59, 59);
     if (args.pathFileOutput != nullptr) {
         std::cout << "output: " << flags.output << " values: " << args.pathFileOutput << '\n';
