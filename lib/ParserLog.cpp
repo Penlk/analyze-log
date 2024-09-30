@@ -1,5 +1,5 @@
 #include <iostream>
-#include "AllStructs.h"
+#include "Structs/AllStructs.h"
 #include "Functions.h"
 #include <fstream>
 
@@ -10,22 +10,34 @@ int ParserLog(IsCommands flags, ValuesArgs args)
 
     if (!fileLog.is_open())
     {
-        printf("Cannot open the file %s\n", args.pathFileLog);
+        printf("Cannot open the log file %s\n", args.pathFileLog);
         return 1;
     }
 
     std::ofstream fileOutput;
     if (flags.output)
+    {
         fileOutput.open(args.pathFileOutput);
+        if (!fileOutput.is_open())
+            printf("Cannot create or open the file\n%s\n", args.pathFileOutput);
+    }
+
+    if (!fileOutput.is_open())
+        return 1;
 
     char buffer[65536];
 
     MyList<char*> requests;
     MyList<long*> valuesStats;
 
+    long long lastTime = -1;
+    long long resultCounter = 1;
+    long long counter = 0;
+    long long fromMax = -1;
+    long long toMax = -1;
+
     while (fileLog.getline(buffer, 65536))
     {
-        //std::cout << buffer << std::endl;
         buffer[65535] = '\0';
 
         ValuesLog lineLog;
@@ -54,7 +66,7 @@ int ParserLog(IsCommands flags, ValuesArgs args)
             continue;
         
         lineLog.status = num;
-        lineLog.LocalTimeToInt();
+        lineLog.timeInt = lineLog.LocalTimeToInt();
         if (lineLog.timeInt < args.fromT || lineLog.timeInt > args.toT)
             continue;
         
@@ -80,24 +92,50 @@ int ParserLog(IsCommands flags, ValuesArgs args)
             valuesStats.Append(val);
         }
 
-
+        if (lastTime == -1)
+        {
+            lastTime = lineLog.timeInt;
+            counter = 1;
+        }
+        else if (lineLog.timeInt - lastTime <= args.windowT)
+        {
+            counter++;
+            if (resultCounter < counter)
+            {
+                fromMax = lastTime;
+                toMax = lineLog.timeInt;
+            }
+        }
+        else
+        {
+            resultCounter = resultCounter < counter ? counter : resultCounter;
+            counter = 1;
+            lastTime = lineLog.timeInt;
+        }
         
         if (flags.print)
             std::cout << buffer << std::endl;
 
-        // end = FindSymbol(buffer, end, '\0');
-        // buffer[end] = '\n';
         if (flags.output)
             fileOutput << buffer << std::endl;
     }
 
-    printf("\n-----------STATS for %d requests-----------\n", args.statsN > valuesStats.length ? (int)valuesStats.length : args.statsN);
+    printf("\n-----------STATS for %d requests-----------\n", args.statsN > valuesStats.length ? 
+    (int)valuesStats.length : args.statsN);
+    
     QuickSort(valuesStats.list, 0, valuesStats.length - 1, valuesStats.length, args.statsN);
+
     for (int i = 0; i < args.statsN && i < valuesStats.length; i++)
         printf("[%d] %s  ---  %ld\n", i + 1, requests.list[valuesStats.list[valuesStats.length - 1 - i][1]], 
         valuesStats.list[valuesStats.length - 1 - i][0]);
+    
     printf("\n");
+    
+    printf("The maximum number of requests lasting %d seconds per interval from %lld to %lld is %lld\n\n", args.windowT, 
+    fromMax, toMax, resultCounter);
+
     fileLog.close();
     fileOutput.close();
+
     return 0;
 }

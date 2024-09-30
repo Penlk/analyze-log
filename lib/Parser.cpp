@@ -8,7 +8,7 @@ char* reduceArgs[] = {"-o", "-p", "-s", "-w", "-f", "-t"};
 int IndexFullArgument(char* str) //Выводит индекс полного аргумента, если не полный аргумент выводит -1
 {
     for (int i = 0; i < 6; i++)
-        if (IsEqualStringsFragment(fullArgs[i], str, StringLength(fullArgs[i])))
+        if (IsEqualStrings(fullArgs[i], str, StringLength(fullArgs[i])))
             return i;
     
     return -1;
@@ -28,11 +28,6 @@ int IndexReduceArgument(char* str) //Выводит индекс сокраще�
 
 int Parse(int argc, char** argv, IsCommands& flags, ValuesArgs& args)
 {
-    //Определение: слово - argv[i]
-    //Постулат 1: Если какое-то слово является названием аргумента, то это и есть аргумент
-    //Постулат 2: Если какое-то слово, не являющееся аргументом, идет после аргумента, то такой случай имеет действие в 2 этапа с разными приоритетами
-    //  Этап 1 (приоритет 0): Пытаемся присвоить аргументу слово
-    //  Этап 2 (приоритет 1): Это лог
     if (argc < 2)
     {
         printf("Not enough arguments\n");
@@ -46,11 +41,6 @@ int Parse(int argc, char** argv, IsCommands& flags, ValuesArgs& args)
         int lengthThisArg = StringLength(argv[i]);
         int fullArg = IndexFullArgument(argv[i]);
         int reduceArg = IndexReduceArgument(argv[i]);
-
-        // printf("[%d]Arg: %s\tFull: %d\t Reduce: %d\t [", i, argv[i], fullArg, reduceArg);
-        // for (int i = 0; i < 6; i++)
-        //     printf("%d, ", (int)flags.args[i]);
-        // printf("]\n");
 
         if (lastArg == 0)
         {
@@ -79,7 +69,7 @@ int Parse(int argc, char** argv, IsCommands& flags, ValuesArgs& args)
                 long long num = StringToInt(argv[i]);
                 if (num == -1)
                 {
-                    printf("Cannot {%s} without argument\n", argv[i - 1]);
+                    printf("The argument {%s} cannot be executed without argument\n", argv[i - 1]);
                     return 1;
                 }
 
@@ -89,7 +79,7 @@ int Parse(int argc, char** argv, IsCommands& flags, ValuesArgs& args)
             {
                 if (flags.log)
                 {
-                    printf("The 2nd log\n%s\n", argv[i]);
+                    printf("Cannot be exist the two or more logs\n%s\n", argv[i]);
                     return 1;
                 } else
                 {
@@ -104,7 +94,7 @@ int Parse(int argc, char** argv, IsCommands& flags, ValuesArgs& args)
         {
             if (lastArg != -1 && lastArg != 1)
             {
-                printf("Cannot be {%s} without argument\n", argv[i - 1]);
+                printf("The argument {%s} cannot be executed without argument\n", argv[i - 1]);
                 return 1;
             }
             if (flags.args[reduceArg])
@@ -124,7 +114,7 @@ int Parse(int argc, char** argv, IsCommands& flags, ValuesArgs& args)
                 {
                     if (flags.log)
                     {
-                        printf("The 2nd log\n%s\n", argv[i]);
+                        printf("Cannot be exist the two or more logs\n%s\n", argv[i]);
                         return 1;
                     } else
                     {
@@ -134,13 +124,13 @@ int Parse(int argc, char** argv, IsCommands& flags, ValuesArgs& args)
                         continue;
                     }
                 }
+
                 printf("Writting the 2nd same argument\n%s\n", argv[i]);
                 return 1;
             }
 
             if (lengthThisArg == StringLength(fullArgs[fullArg]))
             {
-
                 flags.IndexToField(fullArg);
                 lastArg = fullArg;
             } else

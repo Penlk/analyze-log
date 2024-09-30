@@ -1,7 +1,6 @@
 #include <iostream>
 #include "../lib/Parser.h"
 #include "../lib/Functions.h"
-#include "../lib/WorkCommands.h"
 #include "../lib/Structs/AllStructs.h"
 #include "../lib/ParserLog.h"
 #include <time.h>
@@ -11,13 +10,15 @@ int main(int argc, char* argv[])
     long long times = time(0);
     IsCommands flags;
     ValuesArgs args;
+
     if(Parse(argc, argv, flags, args))
         return 1;
+
     ParserLog(flags, args);
    
     //std::cout << list.length << " " << list.index;
 
-    // log.getline(buf, 1000);S
+    // log.getline(buf, 1000);
     // std::cout << buf << std::endl;
     // log.getline(buf, 1000);
     // std::cout << StringLength(buf) << std::endl;

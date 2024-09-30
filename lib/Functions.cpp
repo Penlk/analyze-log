@@ -13,7 +13,7 @@ bool IsEqualStrings(char* a, char* b)
     return true;
 }
 
-bool IsEqualStringsFragment(char* a, char* b, int ceillingB)
+bool IsEqualStrings(char* a, char* b, int ceillingB)
 {
     for (int i = 0; i < ceillingB; i++)
     {
@@ -77,7 +77,6 @@ char* CopyString(char* str, int start, int end)
     result[end - start] = '\0';
     return result;
 }
-
 
 int MonthDays(char* month) //Без високосного кода
 {

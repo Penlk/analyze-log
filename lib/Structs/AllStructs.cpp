@@ -1,6 +1,5 @@
 #include "AllStructs.h"
 #include "../Functions.h"
-#include <iostream> //Убрать
 
 void IsCommands::IndexToField(int i)
 {
@@ -75,6 +74,11 @@ long long ValuesLog::LocalTimeToInt() //[localTime]
     start = end + 1;
     end = FindSymbol(str, start, ' ');
     int second = StringToInt(str, start, end);
+
+    start = end + 1;
+    bool minus = start == '-' ? -1: 1;
+    hour += minus * StringToInt(str, start + 1, start + 3);
+    minute += minus * StringToInt(str, start + 3, start + 5);
 
     if (end >= localTimeRight)
         return -1;

@@ -1,5 +1,5 @@
 bool IsEqualStrings(char* a, char* b);
-bool IsEqualStringsFragment(char* a, char* b, int ceillingB);
+bool IsEqualStrings(char* a, char* b, int ceillingB);
 int StringLength(char* str);
 long long StringToInt(char* str);
 long long StringToInt(char* str, int start, int end);
