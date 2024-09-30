@@ -28,7 +28,7 @@ void IsCommands::IndexToField(int i)
     }
 }
 
-void ValuesArgs::IndexToFieldValue(int i, int value)
+void ValuesArgs::IndexToFieldValue(int i, long long value)
 {
     switch (i)
     {
@@ -81,3 +81,24 @@ long long ValuesLog::LocalTimeToInt() //[localTime]
 
     return TranslateTime(day, month, year, hour, minute, second);
 }
+
+template<typename T>
+void MyList<T>::Append(T str)
+{
+    length++;
+
+    if (length == maxLength + 1)
+    {
+        T* newList = new T[maxLength * 2];
+        for (int i = 0; i < maxLength; i++)
+            newList[i] = list[i];
+        delete [] list;
+        list = newList;
+        maxLength *= 2;
+    }
+
+    list[length - 1] = str;
+}
+
+template struct MyList<char*>;
+template struct MyList<long*>;

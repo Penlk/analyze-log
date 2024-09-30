@@ -76,7 +76,7 @@ int Parse(int argc, char** argv, IsCommands& flags, ValuesArgs& args)
         {
             if (lastArg != -1 && lastArg != 1)
             {
-                int num = StringToInt(argv[i]);
+                long long num = StringToInt(argv[i]);
                 if (num == -1)
                 {
                     printf("Cannot {%s} without argument\n", argv[i - 1]);

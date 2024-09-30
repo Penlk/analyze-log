@@ -35,32 +35,32 @@ int StringLength(char* str)
     return l;
 }
 
-int StringToInt(char* str) //Возвращает -1, если строка имеет не цифру.
+long long StringToInt(char* str) //Возвращает -1, если строка имеет не цифру.
 {
-    int result = 0;
-    int r = 1;
+    long long result = 0;
+    long long r = 1;
     for (int i = StringLength(str) - 1; i > -1; i--)
     {
         if (str[i] > 57 || str[i] < 48)
             return -1;
 
-        result += (str[i] - 48) * r;
+        result += (long long)((str[i] - 48) * r);
         r *= 10;
     }
 
     return result;
 }
 
-int StringToInt(char* str, int start, int end) //Возвращает -1, если промежуток [start, end] имеет не цифру.
+long long StringToInt(char* str, int start, int end) //Возвращает -1, если промежуток [start, end] имеет не цифру.
 {
-    int result = 0;
-    int r = 1;
+    long long result = 0;
+    long long r = 1;
     for (int i = end - 1; i >= start; i--)
     {
         if (str[i] > '9' || str[i] < '0')
             return -1;
 
-        result += (str[i] - 48) * r;
+        result += (long long)((str[i] - 48) * r);
         r *= 10;
     }
 
@@ -69,7 +69,7 @@ int StringToInt(char* str, int start, int end) //Возвращает -1, есл
 
 char* CopyString(char* str, int start, int end)
 {
-    char result[end - start + 1];
+    char* result = new char[end - start + 1];
 
     for (int i = start; i < end; i++)
         result[i - start] = str[i];
@@ -129,4 +129,40 @@ int FindSymbol(char* str, int start, char symbol) //Возвращает -1, е�
         end++;
     }
     return end;
+}
+
+long Partition(long** arr, long l, long r)
+{
+    long pivot = arr[l][0];
+
+    int i = l - 1;
+    int j = r + 1;
+
+    while (true)
+    {
+        do
+            i++;
+        while (arr[i][0] < pivot);
+
+        do
+            j--;
+        while (arr[j][0] > pivot);
+
+        if (i >= j)
+            return j;
+
+        long* temp = arr[i];
+        arr[i] = arr[j];
+        arr[j] = temp;
+    }
+}
+
+void QuickSort(long** arr, long l, long r, long length, long n)
+{
+    if (l >= r)
+        return;
+    long mid = Partition(arr, l, r);
+    if (length - l <= n || length - mid <= n)
+        QuickSort(arr, l, mid, length, n);
+    QuickSort(arr, mid + 1, r, length, n);
 }

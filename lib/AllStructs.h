@@ -9,7 +9,7 @@ struct IsCommands
     bool window = false;
     bool from = false;
     bool to = false;
-    bool args[6];
+    bool* args = new bool[6]{false, false, false, false, false, false};
     void IndexToField(int i);
 };
 
@@ -34,4 +34,15 @@ struct ValuesLog
     long long timeInt;
 
     long long LocalTimeToInt();
+};
+
+template<typename T>
+struct MyList
+{
+    T* list = new T[1];
+    long long maxLength = 1;
+    long long length = 0;
+
+    void Append(T str);
+    void PrintElements();
 };

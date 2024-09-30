@@ -22,7 +22,7 @@ struct ValuesArgs
     long long fromT = 0;
     long long toT = 17274350860000;
 
-    void IndexToFieldValue(int i, int value);
+    void IndexToFieldValue(int i, long long value);
 };
 
 struct ValuesLog
@@ -34,4 +34,14 @@ struct ValuesLog
     long long timeInt;
 
     long long LocalTimeToInt();
+};
+
+template<typename T>
+struct MyList
+{
+    T* list = new T[1];
+    long long maxLength = 1;
+    long long length = 0;
+
+    void Append(T str);
 };
