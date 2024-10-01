@@ -1,6 +1,6 @@
 #include <iostream>
 #include "Functions.h"
-#include "Structs/AllStructs.h"
+#include "AllStructs.h"
 
 char* fullArgs[] = {"--output", "--print", "--stats", "--window", "--from", "--to"};
 char* reduceArgs[] = {"-o", "-p", "-s", "-w", "-f", "-t"};
@@ -8,7 +8,7 @@ char* reduceArgs[] = {"-o", "-p", "-s", "-w", "-f", "-t"};
 int IndexFullArgument(char* str) //Выводит индекс полного аргумента, если не полный аргумент выводит -1
 {
     for (int i = 0; i < 6; i++)
-        if (IsEqualStrings(fullArgs[i], str, StringLength(fullArgs[i])))
+        if (AreStringsEqual(fullArgs[i], str, GetStringLength(fullArgs[i])))
             return i;
     
     return -1;
@@ -16,17 +16,17 @@ int IndexFullArgument(char* str) //Выводит индекс полного а
 
 int IndexReduceArgument(char* str) //Выводит индекс сокращенного аргумента, если не сокращенный аргумент выводит -1
 {
-    if (StringLength(str) != 2)
+    if (GetStringLength(str) != 2)
         return -1;
 
     for (int i = 0; i < 6; i++)
-        if (IsEqualStrings(str, reduceArgs[i]))
+        if (AreStringsEqual(str, reduceArgs[i]))
             return i;
     
     return -1;
 }
 
-int Parse(int argc, char** argv, IsCommands& flags, ValuesArgs& args)
+int Parse(int argc, char** argv, CommandFlags& flags, ArgumentValues& args)
 {
     if (argc < 2)
     {
@@ -38,9 +38,9 @@ int Parse(int argc, char** argv, IsCommands& flags, ValuesArgs& args)
 
     for (int i = 1; i < argc; i++)
     {
-        int lengthThisArg = StringLength(argv[i]);
-        int fullArg = IndexFullArgument(argv[i]);
-        int reduceArg = IndexReduceArgument(argv[i]);
+        int lengthThisArg = GetStringLength(argv[i]);
+        int fullArgIndex = IndexFullArgument(argv[i]);
+        int reduceArgIndex = IndexReduceArgument(argv[i]);
 
         if (lastArg == 0)
         {
@@ -50,75 +50,75 @@ int Parse(int argc, char** argv, IsCommands& flags, ValuesArgs& args)
                 return 1;
             }
             
-            if (fullArg != -1 || reduceArg != -1)
+            if (fullArgIndex != -1 || reduceArgIndex != -1)
             {
                 printf("The argument cannot be a value\n%s\n", argv[i]);
                 return 1;
             }
 
             args.pathFileOutput = argv[i];
-            flags.IndexToField(0);
+            flags.SetFlagByIndex(0);
             lastArg = -1;
             continue;
         }
 
-        if (fullArg == -1 && reduceArg == -1)
+        if (fullArgIndex == -1 && reduceArgIndex == -1)
         {
             if (lastArg != -1 && lastArg != 1)
             {
-                long long num = StringToInt(argv[i]);
+                long long num = ConvertStringToInt(argv[i]);
                 if (num == -1)
                 {
                     printf("The argument {%s} cannot be executed without argument\n", argv[i - 1]);
                     return 1;
                 }
 
-                args.IndexToFieldValue(lastArg, num);
+                args.SetValueByIndex(lastArg, num);
                 lastArg = -1;
             } else
             {
-                if (flags.log)
+                if (flags.logEnabled)
                 {
                     printf("Cannot be exist the two or more logs\n%s\n", argv[i]);
                     return 1;
                 } else
                 {
-                    flags.log = true;
+                    flags.logEnabled = true;
                     args.pathFileLog = argv[i];
                     lastArg = -1;
                     continue;
                 }
             }
         }
-        else if (reduceArg != -1)
+        else if (reduceArgIndex != -1)
         {
             if (lastArg != -1 && lastArg != 1)
             {
                 printf("The argument {%s} cannot be executed without argument\n", argv[i - 1]);
                 return 1;
             }
-            if (flags.args[reduceArg])
+            if (flags.argumentFlags[reduceArgIndex])
             {
                 printf("Writting the 2nd same argument\n%s\n", argv[i]);
                 return 1;
             }
 
-            flags.IndexToField(reduceArg);
-            lastArg = reduceArg;
+            flags.SetFlagByIndex(reduceArgIndex);
+            lastArg = reduceArgIndex;
         }
-        else if (fullArg != -1)
+        else if (fullArgIndex != -1)
         {
-            if (flags.args[fullArg])
+            if (flags.argumentFlags[fullArgIndex])
             {
-                if (argv[i][StringLength(fullArgs[fullArg])] != '=' && lengthThisArg > StringLength(fullArgs[fullArg]))
+                if (argv[i][GetStringLength(fullArgs[fullArgIndex])] != '=' && lengthThisArg > GetStringLength(fullArgs[fullArgIndex]))
                 {
-                    if (flags.log)
+                    if (flags.logEnabled)
                     {
                         printf("Cannot be exist the two or more logs\n%s\n", argv[i]);
                         return 1;
                     } else
                     {
-                        flags.log = true;
+                        flags.logEnabled = true;
                         args.pathFileLog = argv[i];
                         lastArg = -1;
                         continue;
@@ -129,28 +129,28 @@ int Parse(int argc, char** argv, IsCommands& flags, ValuesArgs& args)
                 return 1;
             }
 
-            if (lengthThisArg == StringLength(fullArgs[fullArg]))
+            if (lengthThisArg == GetStringLength(fullArgs[fullArgIndex]))
             {
-                flags.IndexToField(fullArg);
-                lastArg = fullArg;
+                flags.SetFlagByIndex(fullArgIndex);
+                lastArg = fullArgIndex;
             } else
             {
-                if (argv[i][StringLength(fullArgs[fullArg])] != '=' || lengthThisArg <= StringLength(fullArgs[fullArg]) + 1)
+                if (argv[i][GetStringLength(fullArgs[fullArgIndex])] != '=' || lengthThisArg <= GetStringLength(fullArgs[fullArgIndex]) + 1)
                 {
                     printf("Incorrect argument\n%s\n", argv[i]);
                     return 1;
                 }
 
-                if (fullArg == 0)
+                if (fullArgIndex == 0)
                 {
-                    flags.IndexToField(fullArg);
-                    args.pathFileOutput = argv[i] + StringLength(fullArgs[fullArg]) + 1;
+                    flags.SetFlagByIndex(fullArgIndex);
+                    args.pathFileOutput = argv[i] + GetStringLength(fullArgs[fullArgIndex]) + 1;
                     lastArg = -1;
                     continue;
                 }
 
-                flags.IndexToField(fullArg);
-                args.IndexToFieldValue(fullArg, StringToInt(argv[i] + StringLength(fullArgs[fullArg]) + 1));
+                flags.SetFlagByIndex(fullArgIndex);
+                args.SetValueByIndex(fullArgIndex, ConvertStringToInt(argv[i] + GetStringLength(fullArgs[fullArgIndex]) + 1));
                 lastArg = -1;
             }
         }
@@ -162,7 +162,7 @@ int Parse(int argc, char** argv, IsCommands& flags, ValuesArgs& args)
         return 1;
     }
 
-    if (flags.output && args.pathFileOutput == nullptr)
+    if (flags.outputEnabled && args.pathFileOutput == nullptr)
     {
         printf("Argument output is empty\n");
         return 1;

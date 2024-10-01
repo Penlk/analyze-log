@@ -1,6 +1,6 @@
 #include <iostream>
 
-bool IsEqualStrings(char* a, char* b)
+bool AreStringsEqual(char* a, char* b)
 {   
     for (int i = 0;; i++)
     {
@@ -13,7 +13,8 @@ bool IsEqualStrings(char* a, char* b)
     return true;
 }
 
-bool IsEqualStrings(char* a, char* b, int ceillingB)
+
+bool AreStringsEqual(char* a, char* b, int ceillingB)
 {
     for (int i = 0; i < ceillingB; i++)
     {
@@ -26,20 +27,22 @@ bool IsEqualStrings(char* a, char* b, int ceillingB)
     return true;
 }
 
-int StringLength(char* str)
+
+int GetStringLength(char* str)
 {
-    int l = 0;
-    while (str[l] != '\0')
-        l++;
+    int length = 0;
+    while (str[length] != '\0')
+        length++;
     
-    return l;
+    return length;
 }
 
-long long StringToInt(char* str) //Возвращает -1, если строка имеет не цифру.
+
+long long ConvertStringToInt(char* str) //Возвращает -1, если строка имеет не цифру.
 {
     long long result = 0;
     long long r = 1;
-    for (int i = StringLength(str) - 1; i > -1; i--)
+    for (int i = GetStringLength(str) - 1; i > -1; i--)
     {
         if (str[i] > 57 || str[i] < 48)
             return -1;
@@ -51,7 +54,8 @@ long long StringToInt(char* str) //Возвращает -1, если строк�
     return result;
 }
 
-long long StringToInt(char* str, int start, int end) //Возвращает -1, если промежуток [start, end] имеет не цифру.
+
+long long ConvertStringToInt(char* str, int start, int end) //Возвращает -1, если промежуток [start, end] имеет не цифру.
 {
     long long result = 0;
     long long r = 1;
@@ -67,6 +71,7 @@ long long StringToInt(char* str, int start, int end) //Возвращает -1, 
     return result;
 }
 
+
 char* CopyString(char* str, int start, int end)
 {
     char* result = new char[end - start + 1];
@@ -78,44 +83,48 @@ char* CopyString(char* str, int start, int end)
     return result;
 }
 
-int MonthDays(char* month) //Без високосного кода
+
+bool IsLeapYear(int year)
 {
-    // Выводит -1, если формат месяца неправильный
-    if (IsEqualStrings(month, "Jan") || IsEqualStrings(month, "Mar") || IsEqualStrings(month, "May") || 
-    IsEqualStrings(month, "Jul") || IsEqualStrings(month, "Aug") || IsEqualStrings(month, "Oct") || IsEqualStrings(month, "Dec"))
-        return 31;
-    else if (IsEqualStrings(month, "Feb"))
-        return 28;
-    else if (IsEqualStrings(month, "Apr") || IsEqualStrings(month, "Jun") || IsEqualStrings(month, "Sep") || IsEqualStrings(month, "Nov"))
-        return 30;
-    
-    return -1;
+    return (year % 400 == 0) || (year % 100 != 0 && year % 4 == 0);
 }
 
-char* IndexToMonth(int index)
+
+int GetMonthIndex(char* month)
 {
-    char* months[] = {"Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"};
-    return months[index];
+    char* months[] = {"Jan", "Feb", "Mar", "Apr", "May", "Jun", 
+                                   "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"};
+    
+    for (int i = 0; i < 12; ++i)
+    {
+        if (AreStringsEqual(months[i], month))
+            return i;
+    }
+
+    return -1; // Неправильный формат месяца.
 }
+
 
 long long TranslateTime(int days, char* month, int year, int hours, int minutes, int seconds) //Гарантировано, что все данные в правильном формате
 {
-    long long result = (days - 1) * 24 * 60 * 60 + hours * 60 * 60 + minutes * 60 + seconds;
-    for (int i = 1970; i < year; i++)
-        result += (i % 400 == 0 || (i % 100 != 0 && i % 4 == 0)) * 24 * 60 * 60 + 365 * 24 * 60 * 60;
-    
+    int daysInMonths[] = {31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31};
 
-    //WARNING
-    //Плохая реализация, переделать
-    for (int m = 0; !IsEqualStrings(IndexToMonth(m), month) && m < 12; m++)
-        result += MonthDays(IndexToMonth(m)) * 24 * 60 * 60;
+    long long allSeconds = (days - 1) * 86400 + hours * 3600 + minutes * 60 + seconds;
+
+    for (int i = 1970; i < year; i++)
+        allSeconds += (i % 400 == 0 || (i % 100 != 0 && i % 4 == 0)) * 24 * 60 * 60 + 365 * 24 * 60 * 60;
     
-    if (year % 400 == 0 || (year % 100 != 0 && year % 4 == 0))
-        if (!IsEqualStrings(month, "Jan") || !IsEqualStrings(month, "Feb"))
-            result += 24 * 60 * 60;
+    int monthIndex = GetMonthIndex(month);
+    if (monthIndex == -1)
+        return -1;
+
+    daysInMonths[1] += IsLeapYear(year);
+    for (int m = 0; m < monthIndex; m++)
+        allSeconds += daysInMonths[m] * 86400;
     
-    return result;
+    return allSeconds;
 }
+
 
 int FindSymbol(char* str, int start, char symbol) //Возвращает -1, если не натыкается на '\0' || '\n'
 {
@@ -127,8 +136,10 @@ int FindSymbol(char* str, int start, char symbol) //Возвращает -1, е�
         
         end++;
     }
+
     return end;
 }
+
 
 long Partition(long** arr, long l, long r)
 {
@@ -156,12 +167,16 @@ long Partition(long** arr, long l, long r)
     }
 }
 
+
 void QuickSort(long** arr, long l, long r, long length, long n)
 {
     if (l >= r)
         return;
+
     long mid = Partition(arr, l, r);
+
     if (length - l <= n || length - mid <= n)
         QuickSort(arr, l, mid, length, n);
+
     QuickSort(arr, mid + 1, r, length, n);
 }

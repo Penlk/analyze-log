@@ -1,3 +1,3 @@
 #pragma once
 
-int ParserLog(IsCommands flags, ValuesArgs args);
+int ParserLog(CommandFlags flags, ArgumentValues args);

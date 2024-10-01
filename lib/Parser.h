@@ -1,4 +1,4 @@
 #pragma once
-#include "Structs/AllStructs.h"
+#include "AllStructs.h"
 
-int Parse(int argc, char** argv, IsCommands& flags, ValuesArgs& args);
+int Parse(int argc, char** argv, CommandFlags& flags, ArgumentValues& args);
