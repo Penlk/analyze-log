@@ -1,18 +1,25 @@
 #include <iostream>
-#include "Parser.h"
-#include "Functions.h"
+#include <ctime>
+
 #include "AllStructs.h"
+#include "Functions.h"
+#include "Parser.h"
 #include "ParserLog.h"
-#include <time.h>
 
 int main(int argc, char* argv[])
 {
+    if (argc < 2)
+    {
+        std::cerr << "Not enough arguments\n";
+        return 1;
+    }
+
     long long times = time(0);
     CommandFlags flags;
     ArgumentValues args;
 
     if(Parse(argc, argv, flags, args))
-        return 1;
+        return EXIT_FAILURE;
 
     ParserLog(flags, args);
 

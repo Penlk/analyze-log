@@ -11,7 +11,7 @@ int ParserLog(CommandFlags flags, ArgumentValues args)
 
     if (!fileLog.is_open())
     {
-        printf("Cannot open the log file %s\n", args.pathFileLog);
+        std::cerr << "Cannot open the log file\n" << args.pathFileLog << std::endl;
         return 1;
     }
 
@@ -20,11 +20,17 @@ int ParserLog(CommandFlags flags, ArgumentValues args)
     {
         fileOutput.open(args.pathFileOutput);
         if (!fileOutput.is_open())
-            printf("Cannot create or open the file\n%s\n", args.pathFileOutput);
+        {
+            std::cerr << "Cannot create or open the file\n" << args.pathFileOutput << std::endl;
+            return 1;
+        }
     }
 
     if (!fileOutput.is_open())
+    {
+        std::cerr << "Nothint to do without output file\n";
         return 1;
+    }
 
     char buffer[65536];
 
@@ -118,25 +124,24 @@ int ParserLog(CommandFlags flags, ArgumentValues args)
             fileOutput << buffer << std::endl;
     }
 
-    printf("\n-----------STATS for %d requests-----------\n", args.statsCount > valuesStats.length ? 
-    (int)valuesStats.length : args.statsCount);
+    printf("\n----------------------STATS for %lld requests----------------------\n", args.statsCount > valuesStats.length ? 
+    valuesStats.length : args.statsCount);
     
     QuickSort(valuesStats.list, 0, valuesStats.length - 1, valuesStats.length, args.statsCount);
 
     for (int i = 0; i < args.statsCount && i < valuesStats.length; i++)
+    {
         printf("[%d] %s  ---  %ld\n", i + 1, requests.list[valuesStats.list[valuesStats.length - 1 - i][1]], 
         valuesStats.list[valuesStats.length - 1 - i][0]);
-    
-    printf("---------------------------------------------\n");
+    }
+
+    printf("-------------------------------------------------------------------\n");
     
     if (args.windowDuration == 0)
         resultCounter = 0;
     
     printf("\nThe maximum number of requests lasting %d seconds per interval from %lld to %lld is %lld\n\n", args.windowDuration, 
     fromMax, toMax, resultCounter);
-
-    fileLog.close();
-    fileOutput.close();
 
     return 0;
 }

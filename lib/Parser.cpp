@@ -2,109 +2,96 @@
 #include "Functions.h"
 #include "AllStructs.h"
 
-char* fullArgs[] = {"--output", "--print", "--stats", "--window", "--from", "--to"};
-char* reduceArgs[] = {"-o", "-p", "-s", "-w", "-f", "-t"};
-
-int IndexFullArgument(char* str) //Выводит индекс полного аргумента, если не полный аргумент выводит -1
+int FindArgumentIndex(char* str, char** args, int argCount) 
 {
-    for (int i = 0; i < 6; i++)
-        if (AreStringsEqual(fullArgs[i], str, GetStringLength(fullArgs[i])))
+    for (int i = 0; i < argCount; i++) 
+        if (AreStringsEqual(args[i], str, GetStringLength(args[i])))
             return i;
-    
+
     return -1;
 }
 
-int IndexReduceArgument(char* str) //Выводит индекс сокращенного аргумента, если не сокращенный аргумент выводит -1
-{
-    if (GetStringLength(str) != 2)
-        return -1;
 
-    for (int i = 0; i < 6; i++)
-        if (AreStringsEqual(str, reduceArgs[i]))
-            return i;
-    
-    return -1;
-}
+enum NamesArgs {output, print, stats, window, from, to, nothing = -1};
+
 
 int Parse(int argc, char** argv, CommandFlags& flags, ArgumentValues& args)
 {
-    if (argc < 2)
-    {
-        printf("Not enough arguments\n");
-        return 1;
-    }
+    char* fullArgs[] = {"--output", "--print", "--stats", "--window", "--from", "--to"};
+    char* reduceArgs[] = {"-o", "-p", "-s", "-w", "-f", "-t"};
+    const int argCount = 6;
 
-    int lastArg = -1;
+    NamesArgs lastArg = nothing;
 
     for (int i = 1; i < argc; i++)
     {
         int lengthThisArg = GetStringLength(argv[i]);
-        int fullArgIndex = IndexFullArgument(argv[i]);
-        int reduceArgIndex = IndexReduceArgument(argv[i]);
+        int fullArgIndex = FindArgumentIndex(argv[i], fullArgs, argCount);
+        int reduceArgIndex = FindArgumentIndex(argv[i], reduceArgs, argCount);
 
-        if (lastArg == 0)
+        if (lastArg == output)
         {
             if (args.pathFileOutput != nullptr)
             {
-                printf("Writting the 2nd same argument\n%s\n", argv[i - 1]);
+                std::cerr << "Writting the 2nd same argument\n" << argv[i - 1] << std::endl;
                 return 1;
             }
             
             if (fullArgIndex != -1 || reduceArgIndex != -1)
             {
-                printf("The argument cannot be a value\n%s\n", argv[i]);
+                std::cerr << "The argument cannot be a value\n" << argv[i] << std::endl;
                 return 1;
             }
 
             args.pathFileOutput = argv[i];
             flags.SetFlagByIndex(0);
-            lastArg = -1;
+            lastArg = nothing;
             continue;
         }
 
         if (fullArgIndex == -1 && reduceArgIndex == -1)
         {
-            if (lastArg != -1 && lastArg != 1)
+            if (lastArg != nothing && lastArg != print)
             {
                 long long num = ConvertStringToInt(argv[i]);
                 if (num == -1)
                 {
-                    printf("The argument {%s} cannot be executed without argument\n", argv[i - 1]);
+                    std::cerr << "The argument " << argv[i - 1] << " cannot be executed without argument\n";
                     return 1;
                 }
 
                 args.SetValueByIndex(lastArg, num);
-                lastArg = -1;
+                lastArg = nothing;
             } else
             {
                 if (flags.logEnabled)
                 {
-                    printf("Cannot be exist the two or more logs\n%s\n", argv[i]);
+                    std::cerr << "Cannot be exist the two or more logs\n" << argv[i] << std::endl;
                     return 1;
                 } else
                 {
                     flags.logEnabled = true;
                     args.pathFileLog = argv[i];
-                    lastArg = -1;
+                    lastArg = nothing;
                     continue;
                 }
             }
         }
         else if (reduceArgIndex != -1)
         {
-            if (lastArg != -1 && lastArg != 1)
+            if (lastArg != nothing && lastArg != print)
             {
-                printf("The argument {%s} cannot be executed without argument\n", argv[i - 1]);
+                std::cerr << "The argument " << argv[i - 1] << " cannot be executed without argument\n";
                 return 1;
             }
             if (flags.argumentFlags[reduceArgIndex])
             {
-                printf("Writting the 2nd same argument\n%s\n", argv[i]);
+                std::cerr << "Writting the 2nd same argument\n" << argv[i] << std::endl;
                 return 1;
             }
 
             flags.SetFlagByIndex(reduceArgIndex);
-            lastArg = reduceArgIndex;
+            lastArg = (NamesArgs)reduceArgIndex;
         }
         else if (fullArgIndex != -1)
         {
@@ -114,30 +101,30 @@ int Parse(int argc, char** argv, CommandFlags& flags, ArgumentValues& args)
                 {
                     if (flags.logEnabled)
                     {
-                        printf("Cannot be exist the two or more logs\n%s\n", argv[i]);
+                        std::cerr << "Cannot be exist the two or more logs\n" << argv[i] << std::endl;
                         return 1;
                     } else
                     {
                         flags.logEnabled = true;
                         args.pathFileLog = argv[i];
-                        lastArg = -1;
+                        lastArg = nothing;
                         continue;
                     }
                 }
 
-                printf("Writting the 2nd same argument\n%s\n", argv[i]);
+                std::cerr << "Writting the 2nd same argument\n" << argv[i] << std::endl;
                 return 1;
             }
 
             if (lengthThisArg == GetStringLength(fullArgs[fullArgIndex]))
             {
                 flags.SetFlagByIndex(fullArgIndex);
-                lastArg = fullArgIndex;
+                lastArg = (NamesArgs)fullArgIndex;
             } else
             {
                 if (argv[i][GetStringLength(fullArgs[fullArgIndex])] != '=' || lengthThisArg <= GetStringLength(fullArgs[fullArgIndex]) + 1)
                 {
-                    printf("Incorrect argument\n%s\n", argv[i]);
+                    std::cerr << "Incorrect argument\n" << argv[i] << std::endl;
                     return 1;
                 }
 
@@ -145,32 +132,32 @@ int Parse(int argc, char** argv, CommandFlags& flags, ArgumentValues& args)
                 {
                     flags.SetFlagByIndex(fullArgIndex);
                     args.pathFileOutput = argv[i] + GetStringLength(fullArgs[fullArgIndex]) + 1;
-                    lastArg = -1;
+                    lastArg = nothing;
                     continue;
                 }
 
                 flags.SetFlagByIndex(fullArgIndex);
                 args.SetValueByIndex(fullArgIndex, ConvertStringToInt(argv[i] + GetStringLength(fullArgs[fullArgIndex]) + 1));
-                lastArg = -1;
+                lastArg = nothing;
             }
         }
     }
 
-    if (lastArg != -1 && lastArg != 1)
+    if (lastArg != nothing && lastArg != print)
     {
-        printf("Cannot be {%s} without argument\n", argv[argc - 1]);
+        std::cerr << "Cannot be " << argv[argc - 1] << " without argument\n";
         return 1;
     }
 
     if (flags.outputEnabled && args.pathFileOutput == nullptr)
     {
-        printf("Argument output is empty\n");
+        std::cerr << "Argument output is empty\n";
         return 1;
     }
 
     if (args.pathFileLog == nullptr)
     {
-        printf("Cannot analyze without log file\n");
+        std::cerr << "Cannot analyze without log file\n";
         return 1;
     }
 

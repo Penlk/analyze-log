@@ -150,13 +150,9 @@ long Partition(long** arr, long l, long r)
 
     while (true)
     {
-        do
-            i++;
-        while (arr[i][0] < pivot);
+        do {i++;} while (arr[i][0] < pivot);
 
-        do
-            j--;
-        while (arr[j][0] > pivot);
+        do {j--;} while (arr[j][0] > pivot);
 
         if (i >= j)
             return j;

@@ -1,3 +1,4 @@
+#include <limits>
 #pragma once
 
 struct CommandFlags
@@ -21,7 +22,7 @@ struct ArgumentValues
     int statsCount = 10;
     int windowDuration = 0;
     long long fromTime = 0;
-    long long toTime = 17274350860000;
+    long long toTime = std::numeric_limits<long long>::max();
 
     void SetValueByIndex(int argumentIndex, long long value);
 };
